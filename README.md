@@ -28,7 +28,7 @@ Aplicação simples em Laravel + Blade que consome a NewsAPI para buscar notíci
 - NEWSAPI_KEY (crie sua chave em [newsapi.org](https://newsapi.org))
 - Opcional: Node 18+ (apenas se for compilar assets no futuro; este projeto usa CSS inline/Blade e não exige build de front)
 
-## Como rodar (MySQL / XAMPP ou local)
+## Como rodar (MySQL / XAMPP / laragon ou local)
 
 ### 1) Clonar e instalar dependências
 
