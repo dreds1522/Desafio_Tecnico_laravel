@@ -268,6 +268,20 @@ Se o avaliador exigir estritamente SQL Server:
 
 - Ajuste CSS no layout ou personalize `vendor/pagination/tailwind.blade.php`
 
+## Dificuldades encontradas
+- Proteção SSL/TLS desabilitada impossibilitando de criar o projeto.
+- Solução: No ambiente Xampp/Laragon que usam configurações próprias consegui criar normalmente.
+
+- Nas instrunções foi solicitado a criação do banco de dados no SQL Server, mas tive problemas com a configuração do driver.
+- Infelizmente não encontrei solução e para conseguir finalizar o projeto dentro do prazo precisei seguir com o MYSQL.
+
+## Algumas fontes de pesquisa
+- https://www.youtube.com/playlist?list=PLwXQLZ3FdTVH5Tb57_-ll_r0VhNz9RrXb
+- https://www.youtube.com/watch?v=sRNbGEJmjfo&ab_channel=SatellaSoft
+- https://www.youtube.com/watch?v=HZ7pBoeGlgI&t=165s&ab_channel=HertonVilarim
+- https://www.youtube.com/watch?v=jmANjyM3PQk&ab_channel=Celke
+- chatGPT
+
 ## Licença
 
 Este projeto está sob licença MIT.
