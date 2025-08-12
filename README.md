@@ -24,7 +24,7 @@ Aplicação simples em Laravel + Blade que consome a NewsAPI para buscar notíci
 
 - PHP 8.2+ (com ext-json, ext-mbstring, ext-curl)
 - Composer 2+
-- MySQL 5.7+/8.0 (ou MariaDB equivalente)
+- MySQL 5.7+/8.0.
 - NEWSAPI_KEY (crie sua chave em [newsapi.org](https://newsapi.org))
 - Opcional: Node 18+ (apenas se for compilar assets no futuro; este projeto usa CSS inline/Blade e não exige build de front)
 
@@ -113,111 +113,6 @@ resources/views/
 └─ searches/index.blade.php                   # listagem de pesquisas salvas
 ```
 
-## NewsAPI — Service
-
-`app/Services/NewsApiService.php` encapsula a chamada HTTP:
-
-- Endpoint: `/v2/everything`
-- Parâmetros: q, sortBy=publishedAt, page, pageSize, apiKey, etc.
-- Retorna status, totalResults, articles[]
-
-Config em `config/services.php`:
-
-```php
-'newsapi' => [
-    'key' => env('NEWSAPI_KEY'),
-    'base_url' => env('NEWSAPI_BASE', 'https://newsapi.org/v2'),
-],
-```
-
-Uso (injeção no controller):
-
-```php
-public function index(Request $request, \App\Services\NewsApiService $news) {
-    $data = $news->search($request->query('q', ''), $page, $per);
-}
-```
-
-## Modelo e migração (registro de buscas)
-
-Search salva termo, total de resultados e metadados básicos:
-
-```php
-Schema::create('searches', function (Blueprint $table) {
-    $table->id();
-    $table->string('term');
-    $table->unsignedInteger('total_results')->nullable();
-    $table->ipAddress('ip')->nullable();
-    $table->string('user_agent')->nullable();
-    $table->timestamps();
-});
-```
-
-Criação via Artisan:
-
-```bash
-php artisan make:model Search -m
-```
-
-## Paginação (links e tradução)
-
-Links padrão: `{{ $paginator->links() }}`
-
-PT-BR dos botões Anterior/Próximo:
-
-`config/app.php` → `locale = pt_BR`
-
-`resources/lang/pt_BR/pagination.php`:
-
-```php
-return [
-    'previous' => '&laquo; Anterior',
-    'next' => 'Próximo &raquo;',
-];
-```
-
-### Traduzir o resumo "Showing X to Y of Z results":
-
-Publique os templates:
-```bash
-php artisan vendor:publish --tag=laravel-pagination
-```
-
-Edite `resources/views/vendor/pagination/tailwind.blade.php` e troque o `<p>` por algo como:
-
-```html
-<p class="text-sm leading-5 text-gray-700">
-  Exibindo <span class="font-medium">{{ $paginator->firstItem() }}</span>
-  a <span class="font-medium">{{ $paginator->lastItem() }}</span>
-  de <span class="font-medium">{{ $paginator->total() }}</span> resultados
-</p>
-```
-
-Ajustar o tamanho das setas via CSS (exemplo no `<style>` do layout):
-
-```css
-.pager nav svg{ width:14px; height:14px; }
-.pager nav a, .pager nav span{ padding:6px 10px; }
-```
-
-## Validação e cache (recomendado)
-
-### Validação simples para q:
-
-```php
-$request->validate(['q' => 'required|string|min:2|max:120']);
-```
-
-### Cache para evitar rate-limit e acelerar:
-
-```php
-use Illuminate\Support\Facades\Cache;
-$key = "news:{".$q."}:{$page}:{$per}";
-$data = Cache::remember($key, now()->addMinutes(5), fn() => $news->search($q, $page, $per));
-```
-
-Configure o driver de cache em `config/cache.php` conforme seu ambiente (file/redis/memcached).
-
 ## Comandos úteis (Artisan)
 
 - Criar controller resource: `php artisan make:controller NewsController --resource`
@@ -226,17 +121,6 @@ Configure o driver de cache em `config/cache.php` conforme seu ambiente (file/re
 - Resetar (tudo): `php artisan migrate:fresh` (use `--seed` se tiver seeders)
 - Limpar caches: `php artisan optimize:clear`
 - Regenerar autoload: `composer dump-autoload -o`
-
-## Testes (opcional)
-
-- Unit para NewsApiService usando `Http::fake()`
-- Feature para NewsController validando resposta da view, paginação e gravação em searches
-
-Executar:
-
-```bash
-php artisan test
-```
 
 ## Usando SQL Server (opcional)
 
@@ -263,10 +147,6 @@ Se o avaliador exigir estritamente SQL Server:
 ### Unknown database
 
 - Crie o banco e confira o nome no `.env`
-
-### Paginação muito grande
-
-- Ajuste CSS no layout ou personalize `vendor/pagination/tailwind.blade.php`
 
 ## Dificuldades encontradas
 - Proteção SSL/TLS desabilitada impossibilitando de criar o projeto.
